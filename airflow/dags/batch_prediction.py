@@ -38,7 +38,16 @@ with DAG(
         #upload prediction folder to predictionfiles folder in s3 bucket
         os.system(f"aws s3 sync /app/prediction s3://{bucket_name}/prediction_files")
     
+    def print_params_fn(**kwargs):
+        import logging
+        logging.info(kwargs)
+        return None
 
+    print_params = PythonOperator(task_id="print_params",
+                              python_callable=print_params_fn,
+                              provide_context=True,
+                              dag=dag)
+    
     download_input_files  = PythonOperator(
             task_id="download_file",
             python_callable=download_files
@@ -57,4 +66,4 @@ with DAG(
 
     )
 
-    download_input_files >> generate_prediction_files >> upload_prediction_files
+    download_input_files >> generate_prediction_files >> upload_prediction_files >> print_params
