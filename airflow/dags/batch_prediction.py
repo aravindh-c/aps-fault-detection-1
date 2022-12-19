@@ -5,7 +5,7 @@ import pendulum
 import os
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-
+l=""
 
 with DAG(
     'sensor_prediction',
@@ -31,7 +31,7 @@ with DAG(
         input_dir = "/app/input_files"
         for file_name in os.listdir(input_dir):
             #make prediction
-            start_batch_prediction(input_file_path=os.path.join(input_dir,file_name))
+            l=start_batch_prediction(input_file_path=os.path.join(input_dir,file_name))
     
     def sync_prediction_dir_to_s3_bucket(**kwargs):
         bucket_name = os.getenv("BUCKET_NAME")
@@ -41,6 +41,7 @@ with DAG(
     def print_params_fn(**kwargs):
         import logging
         logging.info(kwargs)
+        logging.info(l)
         return None
 
     print_params = PythonOperator(task_id="print_params",
